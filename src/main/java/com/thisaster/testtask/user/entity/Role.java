@@ -1,16 +1,16 @@
-package com.thisaster.testtask.auth.model;
+package com.thisaster.testtask.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.Data;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-public enum Role {
-    ADMIN("ADMIN"),
-    USER("USER");
+@Entity
+@Data
+@Table(name = "roles")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    private String string;
+    private String name;
 
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+       http://www.liquibase.org/xml/ns/dbchangelog
+       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.4.xsd">
+
+    <!-- Подключаем единый SQL-скрипт -->
+    <changeSet id="1" author="you">
+        <sqlFile
+                path="db/changelog/sql/0001-init-schema.sql"
+                relativeToChangelogFile="false"
+                splitStatements="true" endDelimiter=";"/>
+    </changeSet>
+    <include file="db/changelog/2025/05/08-01-changelog.xml"/>
+
+</databaseChangeLog>
