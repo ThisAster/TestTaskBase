@@ -6,11 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "user_")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -19,8 +25,10 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(unique = true, nullable = false)
     private String username;
     private String password;
+    @Column(unique = true, nullable = false)
     private String email;
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -29,9 +37,35 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "subscription_id"))
     private Set<Subscription> subscriptions;
 
-    @Column(name = "role_id")
-    private long roleId;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(value = EnumType.STRING)
+    private List<Role> roles ;
 
-    @Transient
-    private RoleEntity role;
+
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        List<GrantedAuthority> authorities = new ArrayList<>();
+//        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+//        return authorities;
+//    }
+//
+//    @Override
+//    public boolean isAccountNonExpired() {
+//        return UserDetails.super.isAccountNonExpired();
+//    }
+//
+//    @Override
+//    public boolean isAccountNonLocked() {
+//        return UserDetails.super.isAccountNonLocked();
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return UserDetails.super.isCredentialsNonExpired();
+//    }
+//
+//    @Override
+//    public boolean isEnabled() {
+//        return UserDetails.super.isEnabled();
+//    }
 }

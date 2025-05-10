@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Builder
 @Entity
-@Table
+@Table(name = "subscriptions")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

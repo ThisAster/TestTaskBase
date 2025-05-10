@@ -1,6 +1,5 @@
 package com.thisaster.testtask.user.service;
 
-import com.thisaster.testtask.auth.exception.UserAlreadyExistException;
 import com.thisaster.testtask.subscription.entity.Subscription;
 import com.thisaster.testtask.subscription.repository.SubscriptionRepository;
 import com.thisaster.testtask.user.entity.User;
@@ -19,19 +18,16 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
-    private final RoleService roleService;
 
     public User getUserByLogin(String login) {
-        User user = userRepository.findByUsername(login)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-        user.setRole(roleService.getByRoleId(user.getRole().getId()));
-        return user;
+        return userRepository.findByUsername(login)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + login));
     }
 
     @Transactional
     public void createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new UserAlreadyExistException("User " + user.getUsername() + " already exists");
+            throw new RuntimeException("User " + user.getUsername() + " already exists");
         }
         userRepository.save(user);
     }

@@ -3,7 +3,12 @@ package com.thisaster.testtask.user.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thisaster.testtask.subscription.dto.SubscriptionDTO;
+import com.thisaster.testtask.user.entity.Role;
 import com.thisaster.testtask.user.entity.User;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -12,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -21,6 +27,7 @@ import java.util.Set;
 public class UserDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     @NotBlank
     private String username;
@@ -34,7 +41,8 @@ public class UserDTO {
     private Set<SubscriptionDTO> subscriptions;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(value = EnumType.STRING)
     @NotBlank
-    @Pattern(regexp = "^(ADMIN|USER)$")
-    private String role;
+    private List<Role> roles;
 }
