@@ -26,10 +26,9 @@ public class AuthService {
 
     public String logIn(AuthDTO authDTO) {
         var user = userDetailsService.loadUserByUsername(authDTO.getUsername());
-        System.out.println(passwordEncoder.encode(authDTO.getPassword()));
-        System.out.println(authDTO.getPassword());
-        System.out.println(user.getPassword());
         if (!passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
+            System.out.println(authDTO.getPassword());
+            System.out.println(user.getPassword());
             throw new BadCredentialsException("Wrong password");
         }
 
@@ -40,6 +39,7 @@ public class AuthService {
 
     public void registerUser(AuthDTO authDTO) {
         authDTO.setPassword(passwordEncoder.encode(authDTO.getPassword()));
+        System.out.println("AuthDTO: " + authDTO.getPassword());
 
         UserDTO userDTO = UserDTO.builder()
                 .username(authDTO.getUsername())

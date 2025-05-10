@@ -27,10 +27,8 @@ public class JwtUtil {
 
     @Value("${jwt.privateKey}")
     private String privateKey;
-
     @Value("${jwt.publicKey}")
     private String publicKey;
-
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -65,10 +63,10 @@ public class JwtUtil {
 
     private PrivateKey getSigningKey() {
         try {
-            String privateKeyPEM = privateKey.replace("-----BEGIN PRIVATE KEY-----", "").replace("-----END PRIVATE KEY-----", "");
-            byte[] encoded = Base64.getDecoder().decode(privateKeyPEM);
+            // Убираем переносы строк и декодируем ключ из Base64
+            byte[] keyBytes = Base64.getDecoder().decode(privateKey.replace("\n", "").replace("\r", ""));
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
             return keyFactory.generatePrivate(keySpec);
         } catch (Exception e) {
             throw new RuntimeException("Error while loading private key", e);
@@ -109,9 +107,7 @@ public class JwtUtil {
 
     private PublicKey getPublicKey() {
         try {
-            // Убираем переносы строк и декодируем ключ из Base64
-            String publicKeyBase64 = this.publicKey.replace("\n", "");
-            byte[] keyBytes = Base64.getDecoder().decode(publicKeyBase64);
+            byte[] keyBytes = Base64.getDecoder().decode(publicKey.replace("\n", "").replace("\r", ""));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
             return keyFactory.generatePublic(keySpec);
