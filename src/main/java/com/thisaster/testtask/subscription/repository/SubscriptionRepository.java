@@ -1,6 +1,7 @@
 package com.thisaster.testtask.subscription.repository;
 
 import com.thisaster.testtask.subscription.entity.Subscription;
+import com.thisaster.testtask.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,21 @@ import java.util.Set;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
-    @Query("SELECT s FROM Subscription s LEFT JOIN s.users u GROUP BY s.id ORDER BY COUNT(u) DESC LIMIT 3")
-    Set<Subscription> findTop3ByOrderByUsersCountDesc();
+    @Query(value = "SELECT s.id, s.name, COUNT(u.id) as user_count " +
+            "FROM subscriptions s " +
+            "LEFT JOIN user_subscription us ON s.id = us.subscription_id " +
+            "LEFT JOIN user_ u ON us.user_id = u.id " +
+            "GROUP BY s.id " +
+            "ORDER BY user_count DESC " +
+            "LIMIT 3", nativeQuery = true)
+    Set<Subscription> findTop3ByNameOrderByUsersCountDesc();
+
+
+    @Query("SELECT s FROM Subscription s JOIN s.users u WHERE u = :user")
+    Set<Subscription> findSubscriptionsByUser(User user);
+
+    @Query("SELECT s FROM Subscription s WHERE s.name = :name")
+    Subscription findByName(String name);
+
+
 }

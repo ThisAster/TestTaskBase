@@ -55,10 +55,20 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        boolean addedToUser = user.getSubscriptions().add(subscription);
-        boolean addedToSub  = subscription.getUsers().add(user);
+        Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName());
 
-        if (addedToUser || addedToSub) userRepository.save(user);
+        if (existingSubscription == null) {
+            subscriptionRepository.save(subscription);
+            existingSubscription = subscription;
+        }
+
+        boolean addedToUser = user.getSubscriptions().add(existingSubscription);
+        boolean addedToSub = existingSubscription.getUsers().add(user);
+
+        if (addedToUser || addedToSub) {
+            userRepository.save(user);  // Сначала сохраняем пользователя
+            subscriptionRepository.save(existingSubscription);  // Затем сохраняем подписку
+        }
     }
 
     public void removeSubFromUser(Long userId, Long subscriptionId) {
@@ -70,12 +80,13 @@ public class UserService {
 
         user.getSubscriptions().remove(subscription);
         userRepository.save(user);
+        subscriptionRepository.deleteById(subscriptionId);
     }
 
     public Set<Subscription> getUserSubscriptions(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getSubscriptions();
+        return subscriptionRepository.findSubscriptionsByUser(user);
     }
 
     public void deleteUser(Long userId) {

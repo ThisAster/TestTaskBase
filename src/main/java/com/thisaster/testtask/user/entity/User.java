@@ -2,11 +2,9 @@ package com.thisaster.testtask.user.entity;
 
 import com.thisaster.testtask.subscription.entity.Subscription;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -15,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,8 @@ public class User {
             name = "user_subscription",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "subscription_id"))
-    private Set<Subscription> subscriptions;
+    @Builder.Default
+    private Set<Subscription> subscriptions = new HashSet<>();
 
     @Column(name = "role_id")
     private long roleId;

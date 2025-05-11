@@ -18,11 +18,12 @@ import java.util.Set;
 public class SubscriptionDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private String name;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Builder.Default
     private Set<UserDTO> users = new HashSet<>();
 }

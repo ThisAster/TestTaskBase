@@ -19,12 +19,13 @@ import java.util.Set;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
-    private final SubscriptionMapper subscriptionMapper = SubscriptionMapper.INSTANCE;
+    private final SubscriptionMapper subscriptionMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long id) {
         User user = userService.getUserById(id);
         UserDTO result = userMapper.toDTO(user);
+        result.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
         return ResponseEntity.ok(result);
     }
 
@@ -37,19 +38,23 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         User newUser = userMapper.toEntity(userDTO);
+        newUser.setSubscriptions(subscriptionMapper.toEntitySet(userDTO.getSubscriptions()));
         userService.updateUser(id, newUser);
-        return ResponseEntity.ok(userMapper.toDTO(newUser));
+        UserDTO result = userMapper.toDTO(userService.getUserById(id));
+        result.setSubscriptions(subscriptionMapper.toDTOSet(newUser.getSubscriptions()));
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/{id}/subscriptions")
     public ResponseEntity<String> addSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subscriptionDTO) {
         User user = userService.getUserById(id);
         Subscription subscription = subscriptionMapper.toEntity(subscriptionDTO);
+        subscription.setUsers(userMapper.mapUsersDto(subscriptionDTO.getUsers()));
         userService.subscribeUserToSub(user.getId(), subscription);
         return ResponseEntity.ok("User with id "
                 + user.getId()
-                + "subscribe to: "
-                + subscriptionMapper.toDTO(subscription));
+                + " subscribe to: "
+                + subscriptionDTO.getName());
     }
 
     @GetMapping("/{id}/subscriptions")

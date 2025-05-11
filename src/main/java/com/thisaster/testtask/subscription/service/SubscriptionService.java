@@ -13,6 +13,6 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
 
     public Set<Subscription> getTopThreeSubscriptions() {
-        return subscriptionRepository.findTop3ByOrderByUsersCountDesc();
+        return subscriptionRepository.findTop3ByNameOrderByUsersCountDesc();
     }
 }

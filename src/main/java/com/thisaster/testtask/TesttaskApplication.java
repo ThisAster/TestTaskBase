@@ -31,6 +31,6 @@ public class TesttaskApplication {
                                 .type(SecurityScheme.Type.HTTP)
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))
-                .addServersItem(new Server().url("https://localhost:8080").description("Локальный сервер"));
+                .addServersItem(new Server().url("http://localhost:8888").description("Локальный сервер"));
     }
 }

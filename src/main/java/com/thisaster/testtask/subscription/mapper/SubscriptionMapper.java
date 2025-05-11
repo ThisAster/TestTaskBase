@@ -2,28 +2,22 @@ package com.thisaster.testtask.subscription.mapper;
 
 import com.thisaster.testtask.subscription.dto.SubscriptionDTO;
 import com.thisaster.testtask.subscription.entity.Subscription;
-import com.thisaster.testtask.user.mapper.UserMapper;
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.MappingConstants;
 
 import java.util.Set;
 
-@Mapper(componentModel = "spring", uses = UserMapper.class)
-public interface SubscriptionMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public abstract class SubscriptionMapper {
 
-    SubscriptionMapper INSTANCE = Mappers.getMapper(SubscriptionMapper.class);
+    @Mapping(target = "users", ignore = true)
+    public abstract SubscriptionDTO toDTO(Subscription sub);
 
-    @Mapping(target = "users", source = "users", qualifiedByName = "mapUsers")
-    SubscriptionDTO toDTO(Subscription sub);
+    @Mapping(target = "users", ignore = true)
+    public abstract Subscription toEntity(SubscriptionDTO subDTO);
 
-    @Mapping(target = "users", source = "users", qualifiedByName = "mapUsersDto")
-    Subscription toEntity(SubscriptionDTO subDTO);
+    public abstract Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
 
-    @IterableMapping(elementTargetType = SubscriptionDTO.class)
-    Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
-
-    @IterableMapping(elementTargetType = Subscription.class)
-    Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
+    public abstract Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
 }
