@@ -1,9 +1,10 @@
 package com.thisaster.testtask.user.mapper;
 
-import com.thisaster.testtask.subscription.mapper.SubscriptionMapper;
 import com.thisaster.testtask.user.dto.UserDTO;
 import com.thisaster.testtask.user.entity.User;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
@@ -14,11 +15,12 @@ public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "subscriptions", source = "subscriptions")
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "role", ignore = true)
     UserDTO toDTO(User user);
 
     @Mapping(target = "subscriptions", source = "subscriptions")
-    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "roleId", ignore = true)
     User toEntity(UserDTO userDTO);
 
     @Named("mapUsers")

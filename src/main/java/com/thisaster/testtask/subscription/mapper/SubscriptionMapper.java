@@ -2,10 +2,10 @@ package com.thisaster.testtask.subscription.mapper;
 
 import com.thisaster.testtask.subscription.dto.SubscriptionDTO;
 import com.thisaster.testtask.subscription.entity.Subscription;
-import com.thisaster.testtask.user.dto.UserDTO;
-import com.thisaster.testtask.user.entity.User;
 import com.thisaster.testtask.user.mapper.UserMapper;
-import org.mapstruct.*;
+import org.mapstruct.IterableMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
@@ -20,4 +20,10 @@ public interface SubscriptionMapper {
 
     @Mapping(target = "users", source = "users", qualifiedByName = "mapUsersDto")
     Subscription toEntity(SubscriptionDTO subDTO);
+
+    @IterableMapping(elementTargetType = SubscriptionDTO.class)
+    Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
+
+    @IterableMapping(elementTargetType = Subscription.class)
+    Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
 }

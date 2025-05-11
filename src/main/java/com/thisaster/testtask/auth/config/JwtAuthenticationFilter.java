@@ -1,7 +1,7 @@
 package com.thisaster.testtask.auth.config;
 
 import com.thisaster.testtask.auth.service.SecurityUserDetailsService;
-import com.thisaster.testtask.auth.util.JwtUtil;
+import com.thisaster.testtask.auth.service.JwtService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private SecurityUserDetailsService userDetailsService;
 
     @Resource
-    private JwtUtil jwtUtil;
+    private JwtService jwtService;
 
 
     @Override
@@ -45,12 +45,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwtToken = authorizationHeader.substring(7);
-            username = jwtUtil.extractUserName(jwtToken);
+            username = jwtService.extractUserName(jwtToken);
         }
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.isTokenValid(jwtToken, userDetails)) {
+            if (jwtService.isTokenValid(jwtToken, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
 
                 UsernamePasswordAuthenticationToken authToken =

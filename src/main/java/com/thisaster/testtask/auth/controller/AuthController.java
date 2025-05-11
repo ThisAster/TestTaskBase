@@ -1,7 +1,7 @@
 package com.thisaster.testtask.auth.controller;
 
-import com.thisaster.testtask.auth.dto.AuthDTO;
 import com.thisaster.testtask.auth.service.AuthService;
+import com.thisaster.testtask.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody @Validated AuthDTO request) {
+    public ResponseEntity<Void> login(@RequestBody @Validated UserDTO request) {
         try {
             String jwt = authService.logIn(request);
             return ResponseEntity.ok()
@@ -34,7 +34,7 @@ public class AuthController {
 
 //    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Validated AuthDTO request) {
+    public ResponseEntity<?> register(@RequestBody @Validated UserDTO request) {
         authService.registerUser(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .build();

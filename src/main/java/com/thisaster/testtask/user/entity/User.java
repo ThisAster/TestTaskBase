@@ -6,13 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -37,9 +31,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "subscription_id"))
     private Set<Subscription> subscriptions;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @Enumerated(value = EnumType.STRING)
-    private List<Role> roles ;
+    @Column(name = "role_id")
+    private long roleId;
+
+    @Transient
+    private RoleEntity role;
 
 
 //    @Override

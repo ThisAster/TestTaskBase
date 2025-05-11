@@ -1,10 +1,10 @@
 package com.thisaster.testtask.auth.service;
 
-import com.thisaster.testtask.auth.dto.AuthDTO;
-import com.thisaster.testtask.auth.util.JwtUtil;
 import com.thisaster.testtask.user.dto.UserDTO;
+import com.thisaster.testtask.user.entity.RoleEntity;
 import com.thisaster.testtask.user.entity.User;
 import com.thisaster.testtask.user.mapper.UserMapper;
+import com.thisaster.testtask.user.service.RoleService;
 import com.thisaster.testtask.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,36 +19,30 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserService userService;
+    private final RoleService roleService;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final PasswordEncoder passwordEncoder;
     private final UserDetailsService userDetailsService;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
-    public String logIn(AuthDTO authDTO) {
-        var user = userDetailsService.loadUserByUsername(authDTO.getUsername());
-        if (!passwordEncoder.matches(authDTO.getPassword(), user.getPassword())) {
-            System.out.println(authDTO.getPassword());
+    public String logIn(UserDTO userDTO) {
+        var user = userDetailsService.loadUserByUsername(userDTO.getUsername());
+        if (!passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+            System.out.println(userDTO.getPassword());
             System.out.println(user.getPassword());
             throw new BadCredentialsException("Wrong password");
         }
 
-        String jwt = jwtUtil.generateToken(user);
-        log.debug("Пользователь {} успешно авторизирован", authDTO.getUsername());
+        String jwt = jwtService.generateToken(user);
+        log.debug("Пользователь {} успешно авторизирован", userDTO.getUsername());
         return jwt;
     }
 
-    public void registerUser(AuthDTO authDTO) {
-        authDTO.setPassword(passwordEncoder.encode(authDTO.getPassword()));
-        System.out.println("AuthDTO: " + authDTO.getPassword());
-
-        UserDTO userDTO = UserDTO.builder()
-                .username(authDTO.getUsername())
-                .password(authDTO.getPassword())
-                .email(authDTO.getEmail())
-                .build();
-
+    public void registerUser(UserDTO userDTO) {
+        RoleEntity roleEntity = roleService.getByRoleName(userDTO.getRole());
         User user = userMapper.toEntity(userDTO);
-        user.setRoles(authDTO.getRoles());
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        user.setRoleId(roleEntity.getId());
         userService.createUser(user);
     }
 }

@@ -1,4 +1,4 @@
-package com.thisaster.testtask.auth.util;
+package com.thisaster.testtask.auth.service;
 
 import com.thisaster.testtask.auth.config.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class JwtUtil {
+public class JwtService {
 
     @Value("${jwt.privateKey}")
     private String privateKey;
@@ -63,8 +63,9 @@ public class JwtUtil {
 
     private PrivateKey getSigningKey() {
         try {
-            // Убираем переносы строк и декодируем ключ из Base64
-            byte[] keyBytes = Base64.getDecoder().decode(privateKey.replace("\n", "").replace("\r", ""));
+            byte[] keyBytes = Base64.getDecoder().decode(privateKey
+                    .replace("\n", "")
+                    .replace("\r", ""));
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePrivate(keySpec);

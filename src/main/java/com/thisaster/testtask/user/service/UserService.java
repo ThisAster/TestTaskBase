@@ -9,19 +9,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
+    private final RoleService roleService;
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     public User getUserByLogin(String login) {
-        return userRepository.findByUsername(login)
+        User user = userRepository.findByUsername(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with name: " + login));
+        user.setRole(roleService.getByRoleId(user.getRoleId()));
+        return user;
     }
 
     @Transactional
@@ -32,20 +34,26 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void updateUser(Long userId, User user) {
+        User existingUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        existingUser.setUsername(user.getUsername());
+        existingUser.setPassword(user.getPassword());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setSubscriptions(user.getSubscriptions());
+        userRepository.save(existingUser);
+    }
+
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
 
-    public void subscribeUserToSub(Long userId, Long subscriptionId) {
+    public void subscribeUserToSub(Long userId, Subscription subscription) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
-
-        if (user.getSubscriptions() == null) user.setSubscriptions(new HashSet<>());
-        if (subscription.getUsers() == null) subscription.setUsers(new HashSet<>());
 
         boolean addedToUser = user.getSubscriptions().add(subscription);
         boolean addedToSub  = subscription.getUsers().add(user);
@@ -56,13 +64,25 @@ public class UserService {
     public void removeSubFromUser(Long userId, Long subscriptionId) {
         User user = userRepository.findById(userId).orElseThrow(()
                 -> new RuntimeException("User not found"));
-        subscriptionRepository.deleteById(subscriptionId);
+
+        Subscription subscription = subscriptionRepository.findById(subscriptionId)
+                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+
+        user.getSubscriptions().remove(subscription);
+        userRepository.save(user);
     }
 
     public Set<Subscription> getUserSubscriptions(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return user.getSubscriptions();
+    }
+
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new RuntimeException("User with id " + userId + " not found");
+        }
+        userRepository.deleteById(userId);
     }
 
 }
