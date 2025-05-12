@@ -18,15 +18,15 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserMapper userMapper = UserMapper.INSTANCE;
+    private final UserMapper userMapper;
     private final SubscriptionMapper subscriptionMapper;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long id) {
         User user = userService.getUserById(id);
-        UserDTO result = userMapper.toDTO(user);
-        result.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
-        return ResponseEntity.ok(result);
+        UserDTO getUser = userMapper.toDTO(user);
+        getUser.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
+        return ResponseEntity.ok(getUser);
     }
 
     @DeleteMapping("/{id}")
@@ -38,18 +38,15 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
         User newUser = userMapper.toEntity(userDTO);
-        newUser.setSubscriptions(subscriptionMapper.toEntitySet(userDTO.getSubscriptions()));
         userService.updateUser(id, newUser);
-        UserDTO result = userMapper.toDTO(userService.getUserById(id));
-        result.setSubscriptions(subscriptionMapper.toDTOSet(newUser.getSubscriptions()));
-        return ResponseEntity.ok(result);
+        UserDTO modificationUser = userMapper.toDTO(userService.getUserById(id));
+        return ResponseEntity.ok(modificationUser);
     }
 
     @PostMapping("/{id}/subscriptions")
     public ResponseEntity<String> addSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subscriptionDTO) {
         User user = userService.getUserById(id);
         Subscription subscription = subscriptionMapper.toEntity(subscriptionDTO);
-        subscription.setUsers(userMapper.mapUsersDto(subscriptionDTO.getUsers()));
         userService.subscribeUserToSub(user.getId(), subscription);
         return ResponseEntity.ok("User with id "
                 + user.getId()

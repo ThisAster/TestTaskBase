@@ -66,11 +66,12 @@ public class UserService {
         boolean addedToSub = existingSubscription.getUsers().add(user);
 
         if (addedToUser || addedToSub) {
-            userRepository.save(user);  // Сначала сохраняем пользователя
-            subscriptionRepository.save(existingSubscription);  // Затем сохраняем подписку
+            userRepository.save(user);
+            subscriptionRepository.save(existingSubscription);
         }
     }
 
+    @Transactional
     public void removeSubFromUser(Long userId, Long subscriptionId) {
         User user = userRepository.findById(userId).orElseThrow(()
                 -> new RuntimeException("User not found"));
@@ -78,9 +79,12 @@ public class UserService {
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
+        subscription.getUsers().remove(user);
+        if (subscription.getUsers().isEmpty()) {
+            subscriptionRepository.delete(subscription);
+        }
         user.getSubscriptions().remove(subscription);
         userRepository.save(user);
-        subscriptionRepository.deleteById(subscriptionId);
     }
 
     public Set<Subscription> getUserSubscriptions(Long userId) {
