@@ -18,7 +18,7 @@ public class AuthService {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final UserMapper userMapper = UserMapper.INSTANCE;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     public void registerUser(UserDTO userDTO) {
