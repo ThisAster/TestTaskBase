@@ -1,8 +1,22 @@
 package com.thisaster.testtask.user.entity;
 
 import com.thisaster.testtask.subscription.entity.Subscription;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,32 +50,4 @@ public class User {
 
     @Transient
     private RoleEntity role;
-
-
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        List<GrantedAuthority> authorities = new ArrayList<>();
-//        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
-//        return authorities;
-//    }
-//
-//    @Override
-//    public boolean isAccountNonExpired() {
-//        return UserDetails.super.isAccountNonExpired();
-//    }
-//
-//    @Override
-//    public boolean isAccountNonLocked() {
-//        return UserDetails.super.isAccountNonLocked();
-//    }
-//
-//    @Override
-//    public boolean isCredentialsNonExpired() {
-//        return UserDetails.super.isCredentialsNonExpired();
-//    }
-//
-//    @Override
-//    public boolean isEnabled() {
-//        return UserDetails.super.isEnabled();
-//    }
 }
