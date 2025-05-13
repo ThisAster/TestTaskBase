@@ -89,7 +89,6 @@ public class UserControllerTest {
     }
 
     @Test
-    @Transactional
     void shouldAddSubscriptionToUser(@Value("classpath:user/createSubscription.json") Resource json) throws Exception {
         Long userId = 1L;
         mockMvc.perform(post("/api/users/{id}/subscriptions", userId)
