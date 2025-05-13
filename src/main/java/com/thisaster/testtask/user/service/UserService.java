@@ -97,7 +97,7 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new EntityAlreadyExistsException("User with id " + userId + " exists");
+            throw new EntityNotFoundException("User with id " + userId + " not found");
         }
         userRepository.deleteById(userId);
     }

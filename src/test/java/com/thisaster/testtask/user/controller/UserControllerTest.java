@@ -29,8 +29,7 @@ import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringContains.containsString;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Slf4j
@@ -98,5 +97,4 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("subscribe to")));
     }
-
 }
