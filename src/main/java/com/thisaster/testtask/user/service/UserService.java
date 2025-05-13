@@ -1,5 +1,7 @@
 package com.thisaster.testtask.user.service;
 
+import com.thisaster.testtask.exception.EntityAlreadyExistsException;
+import com.thisaster.testtask.exception.EntityNotFoundException;
 import com.thisaster.testtask.subscription.entity.Subscription;
 import com.thisaster.testtask.subscription.repository.SubscriptionRepository;
 import com.thisaster.testtask.user.entity.User;
@@ -37,7 +39,7 @@ public class UserService {
     @Transactional
     public void updateUser(Long userId, User user) {
         User existingUser = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         existingUser.setUsername(user.getUsername());
         existingUser.setPassword(user.getPassword());
@@ -48,12 +50,12 @@ public class UserService {
 
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 
     public void subscribeUserToSub(Long userId, Subscription subscription) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName());
 
@@ -74,10 +76,10 @@ public class UserService {
     @Transactional
     public void removeSubFromUser(Long userId, Long subscriptionId) {
         User user = userRepository.findById(userId).orElseThrow(()
-                -> new RuntimeException("User not found"));
+                -> new EntityNotFoundException("User not found with id: " + userId));
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Subscription not found with id: " + subscriptionId));
 
         subscription.getUsers().remove(user);
         if (subscription.getUsers().isEmpty()) {
@@ -89,13 +91,13 @@ public class UserService {
 
     public Set<Subscription> getUserSubscriptions(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
         return subscriptionRepository.findSubscriptionsByUser(user);
     }
 
     public void deleteUser(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new RuntimeException("User with id " + userId + " not found");
+            throw new EntityAlreadyExistsException("User with id " + userId + " exists");
         }
         userRepository.deleteById(userId);
     }
