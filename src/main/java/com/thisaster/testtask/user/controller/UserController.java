@@ -6,6 +6,7 @@ import com.thisaster.testtask.subscription.mapper.SubscriptionMapper;
 import com.thisaster.testtask.user.dto.UserDTO;
 import com.thisaster.testtask.user.entity.User;
 import com.thisaster.testtask.user.mapper.UserMapper;
+import com.thisaster.testtask.user.service.RoleService;
 import com.thisaster.testtask.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final SubscriptionMapper subscriptionMapper;
+    private final RoleService roleService;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long id) {
@@ -46,6 +48,10 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Validated UserDTO userDTO) {
         User newUser = userMapper.toEntity(userDTO);
+        Set<Subscription> subscriptions = subscriptionMapper.toEntitySet(userDTO.getSubscriptions());
+        newUser.setSubscriptions(subscriptions);
+        newUser.setRole(roleService.getByRoleName(userDTO.getRole()));
+        newUser.setRoleId(newUser.getRoleId());
         userService.updateUser(id, newUser);
         UserDTO modificationUser = userMapper.toDTO(userService.getUserById(id));
         return ResponseEntity.ok(modificationUser);
