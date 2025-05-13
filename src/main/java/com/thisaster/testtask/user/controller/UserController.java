@@ -34,9 +34,9 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long id) {
         User user = userService.getUserById(id);
-        UserDTO getUser = userMapper.toDTO(user);
-        getUser.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
-        return ResponseEntity.ok(getUser);
+        UserDTO userDTO = userMapper.toDTO(user);
+        userDTO.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
+        return ResponseEntity.ok(userDTO);
     }
 
     @DeleteMapping("/{id}")
