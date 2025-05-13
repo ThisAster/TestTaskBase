@@ -17,6 +17,4 @@ public abstract class SubscriptionMapper {
     public abstract Subscription toEntity(SubscriptionDTO subDTO);
 
     public abstract Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
-
-    public abstract Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
 }

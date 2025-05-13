@@ -7,8 +7,6 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class UserMapper {
@@ -20,8 +18,4 @@ public abstract class UserMapper {
     @Mapping(target = "roleId", ignore = true)
     @Mapping(target = "subscriptions", ignore = true)
     public abstract User toEntity(UserDTO userDTO);
-
-    public abstract Set<UserDTO> mapUsers(Set<User> users);
-
-    public abstract Set<User> mapUsersDto(Set<UserDTO> userDTOs);
 }
