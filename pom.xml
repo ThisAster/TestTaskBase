@@ -176,7 +176,7 @@
                 <version>11.8.1</version>
                 <configuration>
                     <cleanDisabled>false</cleanDisabled>
-                    <url>jdbc:postgresql://localhost:5432/postgres</url>
+                    <url>jdbc:postgresql://localhost:5433/postgres</url>
                     <user>postgres</user>
                     <password>1234</password>
                 </configuration>
