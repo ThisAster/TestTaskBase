@@ -19,6 +19,8 @@
 - Maven  
 - SLF4J (Logback)
 - Swagger
+- JUnit
+- Testcontainers
 
 ---
 
