@@ -9,7 +9,15 @@ import com.thisaster.testtask.user.mapper.UserMapper;
 import com.thisaster.testtask.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 
@@ -36,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Validated UserDTO userDTO) {
         User newUser = userMapper.toEntity(userDTO);
         userService.updateUser(id, newUser);
         UserDTO modificationUser = userMapper.toDTO(userService.getUserById(id));
@@ -44,7 +52,7 @@ public class UserController {
     }
 
     @PostMapping("/{id}/subscriptions")
-    public ResponseEntity<String> addSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subscriptionDTO) {
+    public ResponseEntity<String> addSubscription(@PathVariable Long id, @RequestBody @Validated SubscriptionDTO subscriptionDTO) {
         User user = userService.getUserById(id);
         Subscription subscription = subscriptionMapper.toEntity(subscriptionDTO);
         userService.subscribeUserToSub(user.getId(), subscription);
