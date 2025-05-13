@@ -2,14 +2,13 @@ package com.thisaster.testtask.subscription.mapper;
 
 import com.thisaster.testtask.subscription.dto.SubscriptionDTO;
 import com.thisaster.testtask.subscription.entity.Subscription;
-import com.thisaster.testtask.user.mapper.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import java.util.Set;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = UserMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public abstract class SubscriptionMapper {
 
     public abstract SubscriptionDTO toDTO(Subscription sub);
