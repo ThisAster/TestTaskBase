@@ -10,7 +10,9 @@
 
 - Java 17  
 - Spring Boot 3  
-- Spring Data JPA  
+- Spring Data JPA
+- Spring Security
+- Hibernate
 - PostgreSQL  
 - Flyway  
 - Docker, Docker Compose  
