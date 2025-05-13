@@ -16,6 +16,7 @@
 - Docker, Docker Compose  
 - Maven  
 - SLF4J (Logback)
+- Swagger
 
 ---
 
