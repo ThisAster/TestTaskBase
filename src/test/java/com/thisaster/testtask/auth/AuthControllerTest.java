@@ -1,5 +1,7 @@
 package com.thisaster.testtask.auth;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,12 +16,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +34,9 @@ public class AuthControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Value("${auth-service.token}")
+    String token;
+
     @Test
     void shouldLoginSuccessfullyWithValidUser(@Value("classpath:auth/createSupervisor.json") Resource json) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/auth/login")
@@ -44,7 +48,45 @@ public class AuthControllerTest {
                 .andReturn();
 
         String authorizationHeader = result.getResponse().getHeader("Authorization");
-        assertNotNull(authorizationHeader);
-        assertTrue(authorizationHeader.startsWith("Bearer "));
+        log.info("Authorization header: {}", authorizationHeader);
+        Assertions.assertNotNull(authorizationHeader);
+        Assertions.assertTrue(authorizationHeader.startsWith("Bearer "));
+    }
+
+    @Test
+    void shouldRegisterSuccessfullyWithBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + token)
+                        .content(json.getContentAsByteArray())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void shouldRegisterFailWithoutBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.getContentAsByteArray())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldLoginFailWithWrongPassword(@Value("classpath:auth/createDtoWrongPass.json") Resource json) throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.getContentAsByteArray())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldLoginFailWithWrongJson() throws Exception {
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("[0, 1, 2]".getBytes())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
