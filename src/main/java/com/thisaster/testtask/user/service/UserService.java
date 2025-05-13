@@ -31,7 +31,7 @@ public class UserService {
     @Transactional
     public void createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("User " + user.getUsername() + " already exists");
+            throw new EntityAlreadyExistsException("User " + user.getUsername() + " already exists");
         }
         userRepository.save(user);
     }
