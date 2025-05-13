@@ -1,6 +1,5 @@
 package com.thisaster.testtask.user.controller;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -23,6 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Slf4j
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Sql(value = {
         "/sql/test.sql"
@@ -37,7 +38,6 @@ public class UserControllerTest {
     String token;
 
     @Test
-    @Transactional
     void shouldGetUserById() throws Exception {
         Long userId = 1L;
 
@@ -64,7 +64,7 @@ public class UserControllerTest {
 
     @Test
     void shouldDeleteUserById() throws Exception {
-        Long userId = 3L;
+        Long userId = 2L;
         mockMvc.perform(delete("/api/users/{id}", userId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
