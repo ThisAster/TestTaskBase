@@ -35,6 +35,7 @@ public class AuthControllerTest {
     @Value("${auth-service.token}")
     String token;
 
+
     @Test
     void shouldLoginSuccessfullyWithValidUser(@Value("classpath:auth/createSupervisor.json") Resource json) throws Exception {
         MvcResult result = mockMvc.perform(post("/api/auth/login")

@@ -7,3 +7,8 @@ SELECT 'admin@test.ru', 'admin', '$2a$12$SLqbSCYLtKctGX4ovLuzNeGTo6zV4g0oq1YTX.I
 FROM role_type rt
 WHERE rt.name = 'SUPERVISOR'
     ON CONFLICT DO NOTHING;
+
+INSERT INTO subscriptions (name) VALUES
+                                         ('Premium Plan'),
+                                         ('Newsletter'),
+                                         ('Basic Access');
