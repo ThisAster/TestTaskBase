@@ -97,4 +97,15 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("subscribe to")));
     }
+
+    @Test
+    void shouldDeleteUserById() throws Exception {
+        Long userId = 3L;
+        log.info(userRepository.findById(userId).get().getUsername());
+        mockMvc.perform(delete("/api/users/{id}", userId)
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("User with id " + userId + " successfully deleted.")));
+    }
+
 }
