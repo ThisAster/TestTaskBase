@@ -53,6 +53,15 @@ public class AuthControllerTest {
     }
 
     @Test
+    void shouldRegisterFailWithoutBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json.getContentAsByteArray())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void shouldRegisterSuccessfullyWithBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -60,15 +69,6 @@ public class AuthControllerTest {
                         .content(json.getContentAsByteArray())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
-    }
-
-    @Test
-    void shouldRegisterFailWithoutBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json.getContentAsByteArray())
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
     }
 
     @Test
