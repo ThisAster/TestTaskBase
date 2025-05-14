@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -24,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Sql(value = {
         "/sql/test.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
@@ -34,8 +32,19 @@ public class AuthControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @Value("${auth-service.token}")
-    String token;
+    private String obtainAccessToken(Resource loginJson) throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginJson.getContentAsByteArray())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Authorization"))
+                .andReturn();
+
+        String token = result.getResponse().getHeader("Authorization");
+        Assertions.assertNotNull(token, "Authorization header should not be null");
+        return token;
+    }
 
 
     @Test
@@ -64,10 +73,13 @@ public class AuthControllerTest {
     }
 
     @Test
-    void shouldRegisterSuccessfullyWithBearerHeader(@Value("classpath:auth/createUser.json") Resource json) throws Exception {
+    void shouldRegisterSuccessfullyWithBearerHeader(@Value("classpath:auth/createUser.json") Resource json,
+                                                    @Value("classpath:auth/createSupervisor.json") Resource supervisorJson) throws Exception {
+
+        String token = obtainAccessToken(supervisorJson);
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + token)
+                        .header("Authorization", token)
                         .content(json.getContentAsByteArray())
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated());
