@@ -50,6 +50,16 @@
 docker-compose up --build
 ```
 
+## Очистить контейнеры:
+```bash
+docker compose down
+```
+
+## Удалить образы:
+```bash
+docker rmi $(docker images --format "{{.ID}}") --force
+```
+
 ## Приложение будет доступно по адресу:
 ```http://localhost:8888/api``` (со Swagger)
 
