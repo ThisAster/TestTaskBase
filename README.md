@@ -50,3 +50,6 @@ docker-compose up --build
 
 ## Приложение будет доступно по адресу:
 ```http://localhost:8888/api``` (со Swagger)
+
+## Test coverage:
+- 81%
