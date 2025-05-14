@@ -11,7 +11,7 @@
 - Java 17  
 - Spring Boot 3  
 - Spring Data JPA
-- Spring Security
+- Spring Security with OAuth2
 - Hibernate
 - PostgreSQL  
 - Flyway  
