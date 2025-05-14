@@ -21,6 +21,8 @@
 - Swagger
 - JUnit
 - Testcontainers
+- Jacoco
+- CI/CD
 
 ---
 
