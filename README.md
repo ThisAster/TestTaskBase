@@ -52,4 +52,4 @@ docker-compose up --build
 ```http://localhost:8888/api``` (со Swagger)
 
 ## Test coverage:
-- 81%
+- 79%
