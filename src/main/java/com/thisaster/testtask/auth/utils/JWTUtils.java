@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JWTUtils {
-    private final JwtEncoder jwtEncoder;
 
+    private final JwtEncoder jwtEncoder;
 
     public String generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
