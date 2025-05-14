@@ -31,6 +31,7 @@ public class UserDTO {
     private String email;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private Set<SubscriptionDTO> subscriptions;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

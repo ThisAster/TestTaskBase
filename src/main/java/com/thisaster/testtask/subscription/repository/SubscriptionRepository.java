@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -24,7 +25,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
     Set<Subscription> findSubscriptionsByUser(User user);
 
     @Query("SELECT s FROM Subscription s WHERE s.name = :name")
-    Subscription findByName(String name);
+    Optional<Subscription> findByName(String name);
 
-
+    boolean existsByName(String name);
 }

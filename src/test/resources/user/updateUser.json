@@ -1,0 +1,16 @@
+{
+  "username": "maksim_updated",
+  "password": "123",
+  "email": "maksim_updated@test.ru",
+  "subscriptions": [
+    {
+      "name": "Premium Plan"
+    },
+    {
+      "name": "Newsletter"
+    },
+    {
+      "name": "Yandex Premium"
+    }
+  ]
+}

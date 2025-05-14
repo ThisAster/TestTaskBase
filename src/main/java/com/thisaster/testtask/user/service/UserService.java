@@ -9,6 +9,7 @@ import com.thisaster.testtask.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -20,6 +21,7 @@ public class UserService {
     private final RoleService roleService;
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public User getUserByLogin(String login) {
         User user = userRepository.findByUsername(login)
@@ -42,9 +44,24 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
+        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         existingUser.setEmail(user.getEmail());
-        existingUser.setSubscriptions(user.getSubscriptions());
+
+        for (Subscription subscription : user.getSubscriptions()) {
+            Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName())
+                    .orElseGet(() -> {
+                        Subscription newSubscription = new Subscription();
+                        newSubscription.setName(subscription.getName());
+                        return subscriptionRepository.save(newSubscription);
+                    });
+
+            if (!existingUser.getSubscriptions().contains(existingSubscription)) {
+                existingUser.getSubscriptions().add(existingSubscription);
+                existingSubscription.getUsers().add(existingUser);
+            }
+        }
+
+        existingUser.setRole(roleService.getByRoleId(user.getRoleId()));
         userRepository.save(existingUser);
     }
 
@@ -57,7 +74,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
-        Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName());
+        Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName()).orElse(null);
 
         if (existingSubscription == null) {
             subscriptionRepository.save(subscription);
