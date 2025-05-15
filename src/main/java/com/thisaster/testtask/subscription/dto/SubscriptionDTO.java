@@ -16,7 +16,7 @@ public class SubscriptionDTO {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long id;
+    private long id;
     @NotBlank
     private String name;
 }

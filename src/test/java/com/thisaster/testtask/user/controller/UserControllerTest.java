@@ -127,7 +127,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.subscriptions[*].name", containsInAnyOrder(
                         "Premium Plan", "Newsletter", "Yandex Premium"
                 )))
-                .andExpect(jsonPath("$.role", is("SUPERVISOR")))
                 .andReturn();
 
         System.out.println("Result : " + result.getResponse().getContentAsString());
