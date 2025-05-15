@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @Slf4j
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -94,9 +95,7 @@ public class UserControllerTest {
         mockMvc.perform(get("/api/users/{id}/subscriptions", userId)
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name", is("Premium Plan")))
-                .andExpect(jsonPath("$[1].name", is("Newsletter")))
-                .andExpect(jsonPath("$[2].name", is("Basic Access")));
+                .andExpect(jsonPath("$[*].name", containsInAnyOrder("Premium Plan", "Newsletter", "Basic Access")));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class UserControllerTest {
     @Order(6)
     void shouldUpdateUser(@Value("classpath:user/updateUser.json") Resource json) throws Exception {
         Long userId = 3L;
-        mockMvc.perform(put("/api/users/{userId}", userId)
+        MvcResult result = mockMvc.perform(put("/api/users/{userId}", userId)
                         .header("Authorization", "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json.getContentAsByteArray()))
@@ -127,7 +126,11 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.subscriptions", hasSize(3)))
                 .andExpect(jsonPath("$.subscriptions[*].name", containsInAnyOrder(
                         "Premium Plan", "Newsletter", "Yandex Premium"
-                )));
+                )))
+                .andExpect(jsonPath("$.role", is("SUPERVISOR")))
+                .andReturn();
+
+        System.out.println("Result : " + result.getResponse().getContentAsString());
 
         contains(subscriptionRepository.existsByName("Yandex Premium"));
     }

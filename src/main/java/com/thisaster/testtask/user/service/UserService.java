@@ -68,34 +68,34 @@ public class UserService {
         }
 
         boolean addedToUser = user.getSubscriptions().add(existingSubscription);
-        boolean addedToSub = existingSubscription.getUsers().add(user);
 
-        if (addedToUser || addedToSub) {
+        if (addedToUser) {
             userRepository.save(user);
-            subscriptionRepository.save(existingSubscription);
         }
     }
 
     @Transactional
     public void removeSubFromUser(Long userId, Long subscriptionId) {
-        User user = userRepository.findById(userId).orElseThrow(()
-                -> new EntityNotFoundException("User not found with id: " + userId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         Subscription subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription not found with id: " + subscriptionId));
 
-        subscription.getUsers().remove(user);
-        if (subscription.getUsers().isEmpty()) {
+        boolean removed = user.getSubscriptions().remove(subscription);
+        if (removed) userRepository.save(user);
+
+        int count = userRepository.countBySubscriptions_Id(subscriptionId);
+
+        if (count == 0) {
             subscriptionRepository.delete(subscription);
         }
-        user.getSubscriptions().remove(subscription);
-        userRepository.save(user);
     }
 
     public Set<Subscription> getUserSubscriptions(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
-        return subscriptionRepository.findSubscriptionsByUser(user);
+        return user.getSubscriptions();
     }
 
     public void deleteUser(Long userId) {
@@ -114,6 +114,7 @@ public class UserService {
         }
 
         existingUser.setRole(roleService.getByRoleId(newUser.getRoleId()));
+        existingUser.setRoleId(newUser.getRoleId());
     }
 
     @Transactional
