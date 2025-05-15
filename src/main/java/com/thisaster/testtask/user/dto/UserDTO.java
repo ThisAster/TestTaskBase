@@ -35,7 +35,6 @@ public class UserDTO {
     private Set<SubscriptionDTO> subscriptions;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-
     @NotBlank(message = "Role cannot be blank")
     @Pattern(regexp = "^(ADMIN|USER|SUPERVISOR)$", message = "Role must be either admin or user")
     private String role;
