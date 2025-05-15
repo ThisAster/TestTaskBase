@@ -52,11 +52,11 @@ public class UserController {
         newUser.setRoleId(newUser.getRoleId());
         newUser.setSubscriptions(subscriptionMapper.toEntitySet(userDTO.getSubscriptions()));
 
-        userService.updateUser(id, newUser);
-        UserDTO modificationUser = userMapper.toDTO(userService.getUserById(id));
-        modificationUser.setSubscriptions(userDTO.getSubscriptions());
-        modificationUser.setRole(userDTO.getRole());
-        return ResponseEntity.ok(modificationUser);
+        User modificationUser = userService.updateUser(id, newUser);
+        UserDTO modificationUserDTO = userMapper.toDTO(modificationUser);
+        modificationUserDTO.setSubscriptions(subscriptionMapper.toDTOSet(modificationUser.getSubscriptions()));
+        modificationUserDTO.setRole(userDTO.getRole());
+        return ResponseEntity.ok(modificationUserDTO);
     }
 
     @PostMapping("/{id}/subscriptions")

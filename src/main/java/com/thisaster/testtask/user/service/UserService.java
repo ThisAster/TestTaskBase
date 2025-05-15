@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
@@ -39,30 +40,35 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUser(Long userId, User user) {
+    public User updateUser(Long userId, User user) {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));
 
         existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         existingUser.setEmail(user.getEmail());
 
-        for (Subscription subscription : user.getSubscriptions()) {
-            Subscription existingSubscription = subscriptionRepository.findByName(subscription.getName())
-                    .orElseGet(() -> {
-                        Subscription newSubscription = new Subscription();
-                        newSubscription.setName(subscription.getName());
-                        return subscriptionRepository.save(newSubscription);
-                    });
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        existingUser.setRole(roleService.getByRoleId(user.getRoleId()));
 
-            if (!existingUser.getSubscriptions().contains(existingSubscription)) {
-                existingUser.getSubscriptions().add(existingSubscription);
-                existingSubscription.getUsers().add(existingUser);
+        Set<Subscription> updatedSubscriptions = new HashSet<>();
+        if (user.getSubscriptions() != null) {
+            for (Subscription subscription : user.getSubscriptions()) {
+                subscribeUserToSub(userId, subscription);
+                subscriptionRepository.findByName(subscription.getName())
+                        .ifPresent(updatedSubscriptions::add);
             }
         }
 
-        existingUser.setRole(roleService.getByRoleId(user.getRoleId()));
-        userRepository.save(existingUser);
+        Set<Subscription> currentSubscriptions = new HashSet<>(existingUser.getSubscriptions());
+        for (Subscription currentSub : currentSubscriptions) {
+            if (!updatedSubscriptions.contains(currentSub)) {
+                removeSubFromUser(userId, currentSub.getId());
+            }
+        }
+
+        return existingUser;
     }
 
     public User getUserById(Long id) {
@@ -70,6 +76,7 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 
+    @Transactional
     public void subscribeUserToSub(Long userId, Subscription subscription) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + userId));

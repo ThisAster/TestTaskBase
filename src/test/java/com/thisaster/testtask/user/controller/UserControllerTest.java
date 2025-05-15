@@ -3,7 +3,10 @@ package com.thisaster.testtask.user.controller;
 import com.thisaster.testtask.subscription.repository.SubscriptionRepository;
 import com.thisaster.testtask.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Sql(value = {
         "/sql/test.sql"
 }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
@@ -46,6 +50,7 @@ public class UserControllerTest {
     UserRepository userRepository;
 
     @Test
+    @Order(1)
     void shouldGetUserById() throws Exception {
         Long userId = 1L;
 
@@ -60,6 +65,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(2)
     void shouldAddSubscriptionToUser(@Value("classpath:user/createSubscription.json") Resource json) throws Exception {
         Long userId = 1L;
         mockMvc.perform(post("/api/users/{id}/subscriptions", userId)
@@ -71,6 +77,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(3)
     void shouldDeleteUserById() throws Exception {
         Long userId = 2L;
         mockMvc.perform(delete("/api/users/{id}", userId)
@@ -80,6 +87,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(4)
     void shouldGetUserSubscriptions() throws Exception {
         final Long userId = 3L;
 
@@ -92,6 +100,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @Order(5)
     void shouldDeleteUserSubscription() throws Exception {
         final Long userId = 3L;
         final Long subscriptionId = 3L;
@@ -103,6 +112,7 @@ public class UserControllerTest {
 
 
     @Test
+    @Order(6)
     void shouldUpdateUser(@Value("classpath:user/updateUser.json") Resource json) throws Exception {
         Long userId = 3L;
         mockMvc.perform(put("/api/users/{userId}", userId)
