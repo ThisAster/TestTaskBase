@@ -60,6 +60,11 @@ docker compose down
 docker rmi $(docker images --format "{{.ID}}") --force
 ```
 
+## Запустить тесты:
+```bash
+mvn verify
+```
+
 ## Приложение будет доступно по адресу:
 ```http://localhost:8888/api``` (со Swagger)
 
