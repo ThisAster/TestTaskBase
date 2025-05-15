@@ -35,7 +35,6 @@ public class UserController {
     public ResponseEntity<UserDTO> getUserInfo(@PathVariable Long id) {
         User user = userService.getUserById(id);
         UserDTO userDTO = userMapper.toDTO(user);
-        userDTO.setSubscriptions(subscriptionMapper.toDTOSet(user.getSubscriptions()));
         return ResponseEntity.ok(userDTO);
     }
 
@@ -47,16 +46,12 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody @Validated UserDTO userDTO) {
-        User newUser = userMapper.toEntity(userDTO);
-        newUser.setRole(roleService.getByRoleName(userDTO.getRole()));
-        newUser.setRoleId(newUser.getRoleId());
-        newUser.setSubscriptions(subscriptionMapper.toEntitySet(userDTO.getSubscriptions()));
+        User user = userMapper.toEntity(userDTO);
+        user.setRole(roleService.getByRoleName(userDTO.getRole()));
 
-        User modificationUser = userService.updateUser(id, newUser);
-        UserDTO modificationUserDTO = userMapper.toDTO(modificationUser);
-        modificationUserDTO.setSubscriptions(subscriptionMapper.toDTOSet(modificationUser.getSubscriptions()));
-        modificationUserDTO.setRole(userDTO.getRole());
-        return ResponseEntity.ok(modificationUserDTO);
+        User updatedUser = userService.updateUser(id, user);
+        UserDTO updatedDTO = userMapper.toDTO(updatedUser);
+        return ResponseEntity.ok(updatedDTO);
     }
 
     @PostMapping("/{id}/subscriptions")
