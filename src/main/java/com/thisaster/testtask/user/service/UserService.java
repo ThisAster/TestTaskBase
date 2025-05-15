@@ -37,7 +37,6 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
     }
 
-    @Transactional
     public void createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new EntityAlreadyExistsException("User " + user.getUsername() + " already exists");
