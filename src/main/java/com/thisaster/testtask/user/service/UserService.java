@@ -52,16 +52,20 @@ public class UserService {
         }
         existingUser.setRole(roleService.getByRoleId(user.getRoleId()));
 
-        Set<Subscription> updatedSubscriptions = new HashSet<>();
+
+        Set<Subscription> currentSubscriptions = new HashSet<>(existingUser.getSubscriptions());
         if (user.getSubscriptions() != null) {
-            for (Subscription subscription : user.getSubscriptions()) {
-                subscribeUserToSub(userId, subscription);
-                subscriptionRepository.findByName(subscription.getName())
-                        .ifPresent(updatedSubscriptions::add);
+            for (Subscription newSub : user.getSubscriptions()) {
+                boolean alreadySubscribed = currentSubscriptions.stream()
+                        .anyMatch(existingSub -> existingSub.getName().equals(newSub.getName()));
+
+                if (!alreadySubscribed) {
+                    subscribeUserToSub(userId, newSub);
+                }
             }
         }
 
-        Set<Subscription> currentSubscriptions = new HashSet<>(existingUser.getSubscriptions());
+        Set<Subscription> updatedSubscriptions = existingUser.getSubscriptions();
         for (Subscription currentSub : currentSubscriptions) {
             if (!updatedSubscriptions.contains(currentSub)) {
                 removeSubFromUser(userId, currentSub.getId());
