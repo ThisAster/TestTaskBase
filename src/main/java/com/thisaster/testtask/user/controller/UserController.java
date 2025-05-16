@@ -45,11 +45,10 @@ public class UserController {
 
     @PostMapping("/{id}/subscriptions")
     public ResponseEntity<String> addSubscription(@PathVariable Long id, @RequestBody @Validated SubscriptionDTO subscriptionDTO) {
-        User user = userService.getUserById(id);
         Subscription subscription = subscriptionMapper.toEntity(subscriptionDTO);
-        userService.subscribeUserToSub(user.getId(), subscription);
+        userService.subscribeUserToSub(id, subscription);
         return ResponseEntity.ok("User with id "
-                + user.getId()
+                + id
                 + " subscribe to: "
                 + subscriptionDTO.getName());
     }
