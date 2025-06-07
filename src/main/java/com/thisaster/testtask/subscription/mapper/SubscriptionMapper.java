@@ -8,13 +8,13 @@ import org.mapstruct.MappingConstants;
 import java.util.Set;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public abstract class SubscriptionMapper {
+public interface SubscriptionMapper {
 
-    public abstract SubscriptionDTO toDTO(Subscription sub);
+    SubscriptionDTO toDTO(Subscription sub);
 
-    public abstract Subscription toEntity(SubscriptionDTO subDTO);
+    Subscription toEntity(SubscriptionDTO subDTO);
 
-    public abstract Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
+    Set<SubscriptionDTO> toDTOSet(Set<Subscription> subscriptions);
 
-    public abstract Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
+    Set<Subscription> toEntitySet(Set<SubscriptionDTO> subscriptionDTOs);
 }
