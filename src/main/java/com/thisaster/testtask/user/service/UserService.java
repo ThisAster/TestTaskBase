@@ -8,6 +8,8 @@ import com.thisaster.testtask.user.entity.User;
 import com.thisaster.testtask.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final PasswordEncoder passwordEncoder;
+    private UserService self;
+
+    @Autowired
+    public void setSelf(@Lazy UserService self) {
+        this.self = self;
+    }
 
     public User getUserByLogin(String login) {
         User user = userRepository.findByUsername(login)
@@ -117,8 +125,7 @@ public class UserService {
         existingUser.setRoleId(newUser.getRoleId());
     }
 
-    @Transactional
-    protected void updateUserSubscriptions(User user, Set<Subscription> newSubscriptions) {
+    private void updateUserSubscriptions(User user, Set<Subscription> newSubscriptions) {
         Set<Subscription> current = new HashSet<>(user.getSubscriptions());
         Set<String> newNames = newSubscriptions == null ? Set.of() :
                 newSubscriptions.stream().map(Subscription::getName).collect(Collectors.toSet());
@@ -126,14 +133,14 @@ public class UserService {
         if (newSubscriptions != null) {
             for (Subscription sub : newSubscriptions) {
                 if (current.stream().noneMatch(s -> s.getName().equals(sub.getName()))) {
-                    subscribeUserToSub(user.getId(), sub);
+                    self.subscribeUserToSub(user.getId(), sub);
                 }
             }
         }
 
         for (Subscription existing : current) {
             if (!newNames.contains(existing.getName())) {
-                removeSubFromUser(user.getId(), existing.getId());
+                self.removeSubFromUser(user.getId(), existing.getId());
             }
         }
     }
