@@ -19,7 +19,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
             "LIMIT 3", nativeQuery = true)
     Set<Subscription> findTop3ByNameOrderByUsersCountDesc();
 
-    @Query("SELECT s FROM Subscription s WHERE s.name = :name")
     Optional<Subscription> findByName(String name);
 
     boolean existsByName(String name);
